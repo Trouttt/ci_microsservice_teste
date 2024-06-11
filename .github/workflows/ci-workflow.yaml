@@ -1,0 +1,60 @@
+name: ci-workflow-teste
+on:
+  pull_request:
+    branches:
+      - master
+      - staging
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read
+
+jobs:
+  check-application:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.event.pull_request.base.ref == 'master' && 'PROD' || 'STAGING'}}
+    strategy:
+      matrix:
+        version-go: ["1.15"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Seta variável de ambiente
+        run: |
+          if [[ "$GITHUB_BASE_REF" == "master" ]]; then
+            echo "DEPLOY_ENV=PROD" >> $GITHUB_ENV
+          elif [[ "$GITHUB_BASE_REF" == "staging" ]]; then
+            echo "DEPLOY_ENV=STAGING" >> $GITHUB_ENV
+          fi
+          echo "name: ${{ github.event.pull_request.base.ref }}"
+
+          echo '${{ toJson(secrets) }}'
+          echo ${{secrets.AWS_REGION}}
+
+      - name: Configure AWS credentials
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region ${{ secrets.AWS_REGION }}
+          #aws sts get-caller-identity
+          #echo aws sts get-caller-identity
+
+      - name: Get list of changed services
+        id: get-changed-services
+        run: |
+          changed_services=$(git diff --name-only HEAD~1 HEAD | grep -E '.*-api/' | cut -d/ -f1 | uniq)
+          echo "changed_services=$changed_services" >> $GITHUB_ENV
+
+      - name: Build and push changed services
+        if: env.changed_services != ''
+        run: |
+          for service_path in $(echo $changed_services); do
+            service=$(basename $service_path)
+            service_name=${service%-api}
+            echo "Building and pushing $service"
+            docker build -t ${ service_name }-repository-ecr ./apps/$service
+            docker tag ${service_name}-repository-ecr:latest ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${service_name}-repository-ecr:latest
+            docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${service_name}-repository-ecr:latest
+          done
