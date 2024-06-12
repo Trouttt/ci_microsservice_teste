@@ -24,9 +24,9 @@ jobs:
       - name: Seta variável de ambiente
         run: |
           if [[ "$GITHUB_BASE_REF" == "master" ]]; then
-            echo "DEPLOY_ENV=PROD" >> $GITHUB_ENV
+            echo "DEPLOY_ENV=master" >> $GITHUB_ENV
           elif [[ "$GITHUB_BASE_REF" == "staging" ]]; then
-            echo "DEPLOY_ENV=STAGING" >> $GITHUB_ENV
+            echo "DEPLOY_ENV=staging" >> $GITHUB_ENV
           fi
           echo "name: ${{ github.event.pull_request.base.ref }}"
 
