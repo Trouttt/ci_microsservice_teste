@@ -51,6 +51,9 @@ jobs:
       - name: Build and push changed services
         if: env.changed_services != ''
         run: |
+          echo "Teste"
+          echo "$changed_services"
+
           for service_path in $(echo $changed_services); do
             service=$(basename $service_path)
             service_name=${service%-api}
