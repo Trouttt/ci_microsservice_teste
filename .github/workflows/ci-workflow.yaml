@@ -13,7 +13,7 @@ jobs:
   check-application:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.event.pull_request.base.ref == 'master' && 'PROD' || 'STAGING'}}
+      name: ${{ github.event.pull_request.base.ref == 'master' && 'master' || 'staging'}}
     strategy:
       matrix:
         version-go: ["1.15"]
