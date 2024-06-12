@@ -45,7 +45,7 @@ jobs:
       - name: Get list of changed servicess
         id: get-changed-services
         run: |
-          changed_services=$(git diff --name-only HEAD~1 HEAD | grep -E 'apps/[^/]+-api/' | cut -d/ -f1 | uniq)
+          changed_services=$(git diff --name-only HEAD~1 HEAD | grep -E '^apps/[^/]+-api/' | cut -d/ -f1 | uniq)
           echo "changed_services=$changed_services" >> $GITHUB_ENV
 
       - name: Build and push changed services
