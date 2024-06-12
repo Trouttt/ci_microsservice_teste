@@ -20,7 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
+        with:
+          fetch-depth: 0 # Ensure full history is checked out
       - name: Seta variável de ambiente
         run: |
           if [[ "$GITHUB_BASE_REF" == "master" ]]; then
