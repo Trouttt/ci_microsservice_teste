@@ -144,7 +144,7 @@ async function createDatabase() {
 
     if (!collectionExist) db.createCollection(COLLECTION_NAME);
 
-    console.log(collectionExist, "COLEÇÃO EXISTE?");
+    console.log(collectionExist, "COLEÇÃO EXISTEe?");
 
     return db;
   } catch (error) {
