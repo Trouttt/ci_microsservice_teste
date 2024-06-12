@@ -108,7 +108,7 @@ async function sendToSqs(body) {
     MessageBody: bodyStringfy,
     QueueUrl: "",
   };
-  console.log("to aqui vei", bodyStringfy);
+  console.log("to aqui veii", bodyStringfy);
 
   sqs.sendMessage(params, (err, data) => {
     if (err) {
