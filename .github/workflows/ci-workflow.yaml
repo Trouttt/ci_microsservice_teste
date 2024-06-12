@@ -41,7 +41,7 @@ jobs:
           #aws sts get-caller-identity
           #echo aws sts get-caller-identity
 
-      - name: Get list of changed services
+      - name: Get list of changed servicess
         id: get-changed-services
         run: |
           changed_services=$(git diff --name-only HEAD~1 HEAD | grep -E '.*-api/' | cut -d/ -f1 | uniq)
